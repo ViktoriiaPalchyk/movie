@@ -112,11 +112,12 @@ function GetMovieDetail(id, type) {
 }
 
 function ShowMovieDetail(data, type, url) {
-	console.log(data["genres"])
-	url = url.replace("{sizeImage}", sizeImage);
-	url = url.replace("{imagePath}", data.poster_path);
+	if(data.poster_path != null) {
+		url = url.replace("{sizeImage}", sizeImage);
+		url = url.replace("{imagePath}", data.poster_path);
+	} else
+		url = 'Default.png';
 	ShowHideMainList(false);
-//alert(type);
 	movieDetails.innerHTML = "";
     movieDetails.insertAdjacentHTML(
       "beforeend",
@@ -132,11 +133,12 @@ function ShowMovieDetail(data, type, url) {
 			"<div><h2> "+(type == "movie" ? data.title : data.name) +". </h2><h4>("+(type == "movie" ? data.original_title : data.original_name)+")</h4></div></br>"+
 			"<div><h3>Overview:</h3>"+data.overview+"</div></br>"+
 			"<div>Release date: "+(type == "movie" ? data.release_date : data.first_air_date)+"</div>"+
-			"<div> Genres"+ data.genres + "</div>"+
 		"</div>"+
 	  "</div>"
 	);
-	//alert(movieRecomendationID.replace("{movie_id}", data.id));
+
+	window.scrollTo(0, 0);
+	
 	if(type == "movie") {
 	sendGetRequest("GET", movieRecomendationID.replace("{movie_id}", data.id))
 		.then(data => ShowRecomendation(data, type, posterUrl))
@@ -160,12 +162,13 @@ function ShowRecomendation(data, type, url) {
 	if(typeof(results) === "undefined")
 		movieRecomendations.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't recomendations: </h3></div>";
 	else {
-		movieRecomendations.innerHTML = "<div><h3> </h3></div>";
+		movieRecomendations.innerHTML = "<div class='Title'><h2>Recomendations: </h2><div>";
+		//movieRecomendations.insertAdjacentHTML("beforeend", "<div class='containerReg'>");
 		results.forEach(function(result){
 			//alert(result);
 			movieRecomendations.insertAdjacentHTML(
 				"beforeend",
-				"<div class='container' onclick='GetMovieDetail(" +
+				"<div class='movie' onclick='GetMovieDetail(" +
 				result.id + ', "' + type + '"' +
 				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><a class='movie-detail-link' id='" +
 				result.id +
@@ -176,6 +179,7 @@ function ShowRecomendation(data, type, url) {
 				") </div>"
 			);
 		});
+		//movieRecomendations.insertAdjacentHTML("afterend","</div>");
 	}
 }
 
@@ -186,12 +190,12 @@ function ShowRes(data, url) {
 	//alert(results);
 	if(results) {
 		ClearDivData();
-		Trends.innerHTML = "<div><h3>Trends: </h3></div>";
+		resultUL.innerHTML = "<div class='Title'><h2>Trends: </h2><div>";
 	results.forEach(function(result) {
 		//alert(result.media_type);
 		resultUL.insertAdjacentHTML(
 		"beforeend",
-		"<div class='container' onclick='GetMovieDetail(" +
+		"<div class='movie' onclick='GetMovieDetail(" +
 		result.id + ', "' + result.media_type + '"' +
 		");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><a class='movie-detail-link' id='" +
 		result.id +
@@ -213,13 +217,18 @@ function ShowRes(data, url) {
 	if(results) {
 		ClearDivData();
   
+		ShowHideMainList(true);
 	results.forEach(function(result) {
 		//alert(result.media_type);
+		//alert(result.poster_path);
+		var poster = result.poster_path != null ? url.replace("{imagePath}", result.poster_path) : 'Default.png' ;
+		//alert(poster);
 		resultUL.insertAdjacentHTML(
 		"beforeend",
-		"<div class='container' onclick='GetMovieDetail(" +
+		"<div class='movie' onclick='GetMovieDetail(" +
 		result.id + ', "movie"' +
-		");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><a class='movie-detail-link' id='" +
+		");'><div><img src='"+ poster +
+		"' alt='Not Found'></img></div><a class='movie-detail-link' id='" +
 		result.id +
 		"'>" +
 		result.title +
@@ -242,11 +251,9 @@ function ShowError(error) {
 // Main list
 function ShowHideMainList(statuss){
 	if(statuss) {
-		Trends.style.display = "block"
 		resultUL.style.display = "flex";
 		backBtn.style.display = "none";
 	} else{
-		Trends.style.display = "none"
 		resultUL.style.display = "none";
 		backBtn.style.display = "flex";
 	}
@@ -261,7 +268,7 @@ function LoadingShowHide(statusLoading){
 	{
 		setTimeout(function () {
 			loading.style.display = "none";
-		}, 700);
+		}, 300);
 	}
 }
 
