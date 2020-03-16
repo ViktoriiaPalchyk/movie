@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Parcel Sandbox</title>
+	<meta charset="UTF-8" />
+	
+	<style>
+		
+	</style>
+</head>
+
+<body>
+	<script src="https://api.themoviedb.org/3/movie/550?api_key=117da97e02273eef680c6d344da7c586" async defer></script>
+	<script type="text/javascript" src="index.js"></script>
+	<link rel="stylesheet" href="styles.css">
+
+	<div id="loadingGif" style='display: none;'><img  SRC="loading.gif"/></div>
+	
+	<div class="Search">
+		<div><a id="homeBtn" type="button" onclick="home();">Home</a></div>
+		<div><input id="searchInput" type="searchInput" placeholder="Search.."/></div>
+		<div><a id="searchBtn" type="button" onclick="searchBtnClick();">Search</a></div>
+		<div><a id="clearBtn" type="button" onclick="clearClick();">Clear</a></div>
+	</div>
+	<div id='content'>
+		<div><a id="backBtn" type="button" onclick="back();"><img SRC="back_button.png" style="height: 15px;"/>Back</a></div>
+		<p2 id="contentTitle"></p2>
+		<h1 id="Trends"></h1>
+		<div id="resultUL"></div>
+			<div id="movieDetails" style="display:'none';"></div>
+			<div id="movieRecomendations"></div>
+	</div>
+	
+	<script type="text/javascript">
+
+</script>
+</body>
+
+</html>
