@@ -1,6 +1,5 @@
-//import "styles.css";
 
-//const requestURLLatest = 'https://api.themoviedb.org/3/movie/latest?api_key=117da97e02273eef680c6d344da7c586&language=en-US'
+
 const requestURL =
   "https://api.themoviedb.org/3/trending/all/day?api_key=117da97e02273eef680c6d344da7c586";
 const movieFindById =
@@ -13,6 +12,8 @@ const movieRecomendationID =
   "https://api.themoviedb.org/3/movie/{movie_id}/recommendations?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
 const tvRecomendationID = 
 "https://api.themoviedb.org/3/tv/{tv_id}/recommendations?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
+const movieVideo =
+"https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=117da97e02273eef680c6d344da7c586&language=en-US"
 
 const sizeImage = "w300";
 const posterUrl = "https://image.tmdb.org/t/p/{sizeImage}/{imagePath}";
@@ -54,12 +55,9 @@ function searchBtnClick() {
 	var searchText = searchBtn.value;
 	searchText = searchText.replace(" ", "+");
 	var url = searchMovie.replace("{searchText}", searchText);
-	//alert(url);
-	//if(typeof(searchBtn) !== 'undefined') {
 		sendGetRequest("GET", url)
 		.then(data => ShowSearchRes(data, posterUrl))
 		.catch(err => ShowError(err));
-	//}
 }
 
 // Back btn
@@ -91,15 +89,13 @@ function ClearDivData(){
  
 // Show Details
 function GetMovieDetail(id, type) {
-	//var res = data.split("|");
-	//alert(type);
 	LoadingShowHide(true);
-	//alert(movieFindById.replace("{movie_id}", id));
 	switch(type) {
 	  case "movie":
 		sendGetRequest("GET", movieFindById.replace("{movie_id}", id))
 			.then(data => ShowMovieDetail(data, type, posterUrl))
 			.catch(err => ShowError(err));
+
 		break;
 	  case "tv":
 		sendGetRequest("GET", tvFindById.replace("{tv_id}", id))
@@ -121,7 +117,7 @@ function ShowMovieDetail(data, type, url) {
 	movieDetails.innerHTML = "";
     movieDetails.insertAdjacentHTML(
       "beforeend",
-      "<div class=movieDetail>"+
+      "<div class='movieDetail mb-5'>"+
 	  "<div><img src='"+ url +"'></img>"+
 			
 			"<div class=img_info><span>Popularity: "+data.popularity+"</span>&nbsp;"+
@@ -150,36 +146,74 @@ function ShowMovieDetail(data, type, url) {
 		.then(data => ShowRecomendation(data, type, posterUrl))
 		.catch(err => ShowError(err));
 	}
+	sendGetRequest("GET", movieVideo.replace("{movie_id}", data.id))
+	.then(data => ShowVideo(data, movieVideo))
+	.catch(err => ShowError(err));
 
 	LoadingShowHide(false);
 }
+
+function ShowVideo(data, movieVideo){
+	console.log(data);
+	var results = data["results"];
+	
+	
+	results.forEach(function(result){
+		Nameplayer.innerHTML =`<h3 class="m-3">${result.name}</h3>`
+		player = new YT.Player('player', {
+			height: '480',
+			width: '760',
+			videoId: result.key,
+			events: {
+			  'onStateChange': onPlayerStateChange
+			}
+		  });
+
+		  });
+}
+
+var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+  
+  
+  var done = false;
+  function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING && !done) {
+      setTimeout(stopVideo, 6000);
+      done = true;
+    }
+  }
+  function stopVideo() {
+    player.stopVideo();
+  }
 
 function ShowRecomendation(data, type, url) {
 	console.log(data);
 	url = url.replace("{sizeImage}", sizeImage);
 	var results = data["results"];
-	//alert(results);
 	if(typeof(results) === "undefined")
 		movieRecomendations.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't recomendations: </h3></div>";
 	else {
 		movieRecomendations.innerHTML = "<div class='Title'><h2>Recomendations: </h2><div>";
-		//movieRecomendations.insertAdjacentHTML("beforeend", "<div class='containerReg'>");
 		results.forEach(function(result){
-			//alert(result);
 			movieRecomendations.insertAdjacentHTML(
 				"beforeend",
-				"<div class='movie' onclick='GetMovieDetail(" +
+				"<div class='movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
 				result.id + ', "' + type + '"' +
-				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><a class='movie-detail-link' id='" +
+				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 				result.id +
 				"'> " +
 				(type == "movie" ? result.title : result.name) +
 				"</a> ( " +
 				(type == "movie" ? result.release_date : result.first_air_date) +
-				") </div>"
+				")</div> </div>"
 			);
 		});
-		//movieRecomendations.insertAdjacentHTML("afterend","</div>");
 	}
 }
 
@@ -187,42 +221,40 @@ function ShowRecomendation(data, type, url) {
 function ShowRes(data, url) {
 	url = url.replace("{sizeImage}", sizeImage);
 	var results = data["results"];
-	//alert(results);
 	if(results) {
 		ClearDivData();
-		resultUL.innerHTML = "<div class='Title'><h2>Trends: </h2><div>";
+		resultUL.innerHTML = "<div class='Title m-3'><h2>Trends: </h2><div>";
 	results.forEach(function(result) {
-		//alert(result.media_type);
 		resultUL.insertAdjacentHTML(
 		"beforeend",
-		"<div class='movie' onclick='GetMovieDetail(" +
+		"<div class='movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
 		result.id + ', "' + result.media_type + '"' +
-		");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><a class='movie-detail-link' id='" +
+		");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 		result.id +
 		"'>" +
 		(result.media_type == "movie" ? result.title : result.name) +
 		"</a> ( " +
 		(result.media_type == "movie" ? result.release_date : result.first_air_date) +
-		")</div>"
+		")</div></div>"
 		);
 	 });
 	}
 	LoadingShowHide(false);
   }
 
+  
+
+
+
   function ShowSearchRes(data, url) {
 	url = url.replace("{sizeImage}", sizeImage);
 	var results = data["results"];
-	//alert(results);
 	if(results) {
 		ClearDivData();
   
 		ShowHideMainList(true);
 	results.forEach(function(result) {
-		//alert(result.media_type);
-		//alert(result.poster_path);
 		var poster = result.poster_path != null ? url.replace("{imagePath}", result.poster_path) : 'Default.png' ;
-		//alert(poster);
 		resultUL.insertAdjacentHTML(
 		"beforeend",
 		"<div class='movie' onclick='GetMovieDetail(" +
