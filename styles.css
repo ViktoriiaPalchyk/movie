@@ -28,10 +28,6 @@ body{
     padding: 15px;
     align-items: center;
 }
-#searchInput{
-    height: 20px;
-    width: 300px;
-}
 
 #resultUL, #movieRecomendations{
     display: flex;
@@ -47,7 +43,7 @@ body{
 #movieRecomendations div.Title, #resultUL div.Title{
     width: 100%;
 }
-.movie{
+/*.movie{
     display: flex;
     align-items: center;
     flex-flow: column;
@@ -63,7 +59,7 @@ body{
 .movie div{
     height:330px;
     display:flex;
-}
+}*/
 
 .movie:hover{
     background-color: lightgrey;
@@ -87,24 +83,6 @@ body{
 }
 
 
-#clearBtn, #searchBtn, #homeBtn{
-    background-color: lightgray;
-    padding: 3px 5px;
-    border: 1px solid darkgray;
-    margin-right: 5px;
-}
-#searchBtn:hover, #clearBtn:hover, #homeBtn:hover, #backBtn:hover{
-    background-color: darkgray;
-    transition: 0.1s ease-out;
-}
-
-#backBtn{
-    width: 50px;
-    padding:5px;
-    line-height: 15px;
-    margin-top: 10px;
-    font-weight: bold;
-}
 #backBtn img{
     margin-right: 5px;
 }
