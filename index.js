@@ -19,6 +19,7 @@ const movieVideo =
 const PopularMovie =
 "https://api.themoviedb.org/3/movie/popular?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
 
+
 const Genres =
 "https://api.themoviedb.org/3/genre/movie/list?api_key=117da97e02273eef680c6d344da7c586&language=en-US";
 
@@ -137,7 +138,7 @@ function ShowMovieDetail(data, type, url1, url2) {
 	movieDetails.innerHTML = "";
     movieDetails.insertAdjacentHTML(
       "beforeend",
-      "<div style= 'background-image: url("+ url2+")' background-position: right -200px top; background-size: cover;><div class='movieDetail mb-5')>"+
+      "<div style= 'background-image: url("+ url2+")'><div class='movieDetail mb-5')>"+
 	  "<div><img src='"+ url1 +"'></img>"+
 			
 			"<div class=img_info><span>Popularity: "+data.popularity+"</span>&nbsp;"+
@@ -189,7 +190,7 @@ function ShowVideo(data, movieVideo){
 	var results = data["results"];
 		
 	results.forEach(function(result){
-		Nameplayer.innerHTML =`<h3 class="m-3 text-center">${result.name}</h3>`;
+		Nameplayer.innerHTML =`<h3 class="mx-3 mb-5 text-center">${result.name}</h3>`;
 
 		if(typeof(player) != "undefined") { 
 			player.loadVideoById({
@@ -236,7 +237,7 @@ function ShowRecomendation(data, type, url) {
 		results.forEach(function(result){
 			movieRecomendations.insertAdjacentHTML(
 				"beforeend",
-				"<div class='movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
+				"<div class='movie col-md-2 col-ms-2 text-center' onclick='GetMovieDetail(" +
 				result.id + ', "' + type + '"' +
 				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 				result.id +
@@ -256,7 +257,7 @@ function ShowTopMovies(data, type, url) {
 	if(typeof(results) === "undefined")
 		movieTop.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't top: </h3></div>";
 	else {
-		movieTop.innerHTML = "<div class='Title m-3'><h1>Top Movie: </h1><div>";
+		movieTop.innerHTML = "<div class='Title mx-3 mb-5'><h1>Top Movie: </h1><div>";
 		results.forEach(function(result){
 			movieTop.insertAdjacentHTML(
 				"beforeend",
@@ -287,7 +288,7 @@ function ShowPopularMovies(data, type, url) {
 	if(typeof(results) === "undefined")
 		moviePopular.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't top: </h3></div>";
 	else {
-		moviePopular.innerHTML = "<div class='Title m-3'><h1>Popular Movie: </h1><div>";
+		moviePopular.innerHTML = "<div class='Title mx-3 mb-5'><h1>Popular Movie: </h1><div>";
 		results.forEach(function(result){
 			moviePopular.insertAdjacentHTML(
 				"beforeend",
@@ -311,7 +312,7 @@ function ShowRes(data, url) {
 	var results = data["results"];
 	if(results) {
 		ClearDivData();
-		resultUL.innerHTML = "<div class='Title m-3'><h1>Trends: </h1><div>";
+		resultUL.innerHTML = "<div class='Title mx-3 mb-5'><h1>Trends: </h1><div>";
 	results.forEach(function(result) {
 		resultUL.insertAdjacentHTML(
 		"beforeend",
