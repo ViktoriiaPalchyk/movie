@@ -12,6 +12,8 @@ const movieRecomendationID =
   "https://api.themoviedb.org/3/movie/{movie_id}/recommendations?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
 const tvRecomendationID = 
 "https://api.themoviedb.org/3/tv/{tv_id}/recommendations?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
+const topMovie = 
+"https://api.themoviedb.org/3/movie/top_rated?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
 const movieVideo =
 "https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=117da97e02273eef680c6d344da7c586&language=en-US"
 
@@ -19,6 +21,7 @@ const sizeImage = "w300";
 const posterUrl = "https://image.tmdb.org/t/p/{sizeImage}/{imagePath}";
   
 const xhr = new XMLHttpRequest();
+
 
 function sendGetRequest(method, url) {
   return fetch(url).then(response => {
@@ -42,9 +45,14 @@ function MainRequest() {
 	LoadingShowHide(true);
 	ClearDivData();
 	ShowHideMainList(true);
+	
 	sendGetRequest("GET", requestURL)
 	  .then(data => ShowRes(data, posterUrl))
 	  .catch(err => ShowError(err));
+	  
+	sendGetRequest("GET", topMovie)
+		.then(data => ShowTopMovies(data, "movie", posterUrl))
+		.catch(err => ShowError(err));
 }
 
 // Search Movie
@@ -68,7 +76,6 @@ function back(){
 }
 
  function clearClick() {
-	//alert(1);
 	searchInput.value = "";
  }
 
@@ -146,6 +153,7 @@ function ShowMovieDetail(data, type, url) {
 		.then(data => ShowRecomendation(data, type, posterUrl))
 		.catch(err => ShowError(err));
 	}
+
 	sendGetRequest("GET", movieVideo.replace("{movie_id}", data.id))
 	.then(data => ShowVideo(data, movieVideo))
 	.catch(err => ShowError(err));
@@ -153,44 +161,55 @@ function ShowMovieDetail(data, type, url) {
 	LoadingShowHide(false);
 }
 
+//parameters youtube
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+var player;
+
 function ShowVideo(data, movieVideo){
 	console.log(data);
+	Nameplayer.innerHTML = null;
+
 	var results = data["results"];
-	
-	
+		
 	results.forEach(function(result){
-		Nameplayer.innerHTML =`<h3 class="m-3">${result.name}</h3>`
-		player = new YT.Player('player', {
-			height: '480',
-			width: '760',
-			videoId: result.key,
-			events: {
-			  'onStateChange': onPlayerStateChange
-			}
-		  });
+		Nameplayer.innerHTML =`<h3 class="m-3">${result.name}</h3>`;
 
-		  });
+		if(typeof(player) != "undefined") { 
+			player.loadVideoById({
+				videoId: result.key,
+                startSeconds: 0,
+                suggestedQuality: 'default'
+			});
+			player.pauseVideo();
+		} 
+		else 
+		{
+			player = new YT.Player('playerMovie', {
+				height: '480',
+				width: '760',
+				videoId: result.key,
+				events: {
+				  'onStateChange': onPlayerStateChange
+				}
+			});
+		}
+	});
+}  
+  
+var done = false;
+function onPlayerStateChange(event) {
+	if (event.data == YT.PlayerState.PLAYING && !done) {
+	  setTimeout(stopVideo, 6000);
+	  done = true;
+	}
 }
-
-var tag = document.createElement('script');
-
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-  var player;
   
-  
-  var done = false;
-  function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING && !done) {
-      setTimeout(stopVideo, 6000);
-      done = true;
-    }
-  }
-  function stopVideo() {
-    player.stopVideo();
-  }
+function stopVideo() {
+	player.stopVideo();
+}
 
 function ShowRecomendation(data, type, url) {
 	console.log(data);
@@ -204,6 +223,31 @@ function ShowRecomendation(data, type, url) {
 			movieRecomendations.insertAdjacentHTML(
 				"beforeend",
 				"<div class='movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
+				result.id + ', "' + type + '"' +
+				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
+				result.id +
+				"'> " +
+				(type == "movie" ? result.title : result.name) +
+				"</a> ( " +
+				(type == "movie" ? result.release_date : result.first_air_date) +
+				")</div> </div>"
+			);
+		});
+	}
+}
+
+function ShowTopMovies(data, type, url) {
+	console.log(data);
+	url = url.replace("{sizeImage}", sizeImage);
+	var results = data["results"];
+	if(typeof(results) === "undefined")
+		movieTop.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't top: </h3></div>";
+	else {
+		movieTop.innerHTML = "<div class='Title'><h2>Top Movie: </h2><div>";
+		results.forEach(function(result){
+			movieTop.insertAdjacentHTML(
+				"beforeend",
+				"<div class='top-movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
 				result.id + ', "' + type + '"' +
 				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 				result.id +
