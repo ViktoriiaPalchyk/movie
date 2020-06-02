@@ -8,9 +8,10 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	<style>
-		
-	</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
@@ -20,34 +21,43 @@
 
 	<div id="loadingGif" style='display: none;'><img  SRC="Loading.gif"/></div>
 	
-	<div class="Search">
-		<img src="Logo.svg" width="80px"/>
-		<a id="homeBtn" type="button" class="btn btn-light mx-1" onclick="home();">Home</a>
-		<input id="searchInput" type="searchInput" class="form-control mx-1 col-lg-3" placeholder="Search.."/>
-		<a id="searchBtn" type="button" class="btn btn-light mx-1" onclick="searchBtnClick();">Search</a>
-		<a id="clearBtn" type="button" class="btn btn-light mx-1" onclick="clearClick();">Clear</a>
-	</div>
+	<form class="Search">
+		<a id="homeBtn" type="button"  onclick="home();"><img src="Logo.svg" width="80px"/></a>
+			<input id="searchInput" type="searchInput" class="form-control mx-1 col-lg-3" placeholder="Search.."/>
+			<a id="searchBtn" type="button" class="btn btn-light mx-1" onclick="searchBtnClick();">Search</a>
+			<a id="clearBtn" type="button" class="btn btn-light mx-1" onclick="clearClick();">Clear</a>
+	</form>
+	
 	<div id='content'>
 		<a id="backBtn" type="button" class="btn btn-light mx-1 col-lg-1 align-items-center" onclick="back();">
 			<svg class="bi bi-caret-left-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 				<path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 00-1.659-.753l-5.48 4.796a1 1 0 000 1.506z"/>
 			  </svg>Back
 		</a>
-		<p2 id="contentTitle"></p2>
-		<div id="resultUL" class="album py-5 bg-light row"></div>
+		<div id="resultUL" class="album py-5 row"></div>
 		<div id="movieDetails" style="display:'none';"></div>
 		<div id="movieVideo">
 			<div id="Nameplayer"></div>
-			<div id="playerMovie" class="align-self-center m-3"></div>
+			<div id="playerMovie" class="m-auto d-flex justify-content-center"></div>
 		</div>
 		<div id="movieRecomendations"></div>
-		<div id="movieTop"></div>
+		<div id="movieTop" class="album py-5 row"></div>
+		<div id="moviePopular" class="album py-5 row"></div>
+		<div id="movieLatest" class="album py-5 row"></div>
+		</div>
 	</div>
 	<div id="Teams"></div>
-	
-	<script type="text/javascript">
 
-</script>
+	<script>
+		function handle(e){
+        if(e.key === "Enter"){
+            alert("Enter was just pressed.");
+        }
+
+        return false;
+    }
+	</script>
+	
 </body>
 
 </html>

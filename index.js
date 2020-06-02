@@ -1,5 +1,4 @@
 
-
 const requestURL =
   "https://api.themoviedb.org/3/trending/all/day?api_key=117da97e02273eef680c6d344da7c586";
 const movieFindById =
@@ -15,10 +14,18 @@ const tvRecomendationID =
 const topMovie = 
 "https://api.themoviedb.org/3/movie/top_rated?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
 const movieVideo =
-"https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=117da97e02273eef680c6d344da7c586&language=en-US"
+"https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=117da97e02273eef680c6d344da7c586&language=en-US";
+
+const PopularMovie =
+"https://api.themoviedb.org/3/movie/popular?api_key=117da97e02273eef680c6d344da7c586&language=en-US&page=1";
+
+const Genres =
+"https://api.themoviedb.org/3/genre/movie/list?api_key=117da97e02273eef680c6d344da7c586&language=en-US";
+
 
 const sizeImage = "w300";
 const posterUrl = "https://image.tmdb.org/t/p/{sizeImage}/{imagePath}";
+const posterBack ="https://image.tmdb.org/t/p/w1920_and_h800_multi_faces/{posterPath}"
   
 const xhr = new XMLHttpRequest();
 
@@ -53,6 +60,11 @@ function MainRequest() {
 	sendGetRequest("GET", topMovie)
 		.then(data => ShowTopMovies(data, "movie", posterUrl))
 		.catch(err => ShowError(err));
+
+	sendGetRequest("GET", PopularMovie)
+		.then(data => ShowPopularMovies(data, "movie", posterUrl))
+		.catch(err => ShowError(err));
+
 }
 
 // Search Movie
@@ -100,13 +112,13 @@ function GetMovieDetail(id, type) {
 	switch(type) {
 	  case "movie":
 		sendGetRequest("GET", movieFindById.replace("{movie_id}", id))
-			.then(data => ShowMovieDetail(data, type, posterUrl))
+			.then(data => ShowMovieDetail(data, type, posterUrl, posterBack))
 			.catch(err => ShowError(err));
 
 		break;
 	  case "tv":
 		sendGetRequest("GET", tvFindById.replace("{tv_id}", id))
-			.then(data => ShowMovieDetail(data, type, posterUrl))
+			.then(data => ShowMovieDetail(data, type, posterUrl, posterBack))
 			.catch(err => ShowError(err));
 		break;
 	  default:
@@ -114,18 +126,19 @@ function GetMovieDetail(id, type) {
 	}
 }
 
-function ShowMovieDetail(data, type, url) {
+function ShowMovieDetail(data, type, url1, url2) {
+	url2 =url2.replace("{posterPath}", data.backdrop_path);
 	if(data.poster_path != null) {
-		url = url.replace("{sizeImage}", sizeImage);
-		url = url.replace("{imagePath}", data.poster_path);
+		url1 = url1.replace("{sizeImage}", sizeImage);
+		url1 = url1.replace("{imagePath}", data.poster_path);
 	} else
-		url = 'Default.png';
+		url1 = 'Default.png';
 	ShowHideMainList(false);
 	movieDetails.innerHTML = "";
     movieDetails.insertAdjacentHTML(
       "beforeend",
-      "<div class='movieDetail mb-5'>"+
-	  "<div><img src='"+ url +"'></img>"+
+      "<div style= 'background-image: url("+ url2+")' background-position: right -200px top; background-size: cover;><div class='movieDetail mb-5')>"+
+	  "<div><img src='"+ url1 +"'></img>"+
 			
 			"<div class=img_info><span>Popularity: "+data.popularity+"</span>&nbsp;"+
 			"<span>Vote average: "+data.vote_average+"</span>&nbsp;"+
@@ -133,11 +146,11 @@ function ShowMovieDetail(data, type, url) {
 
 		"</div>"+
 		"<div class=Info>" +
-			"<div><h2> "+(type == "movie" ? data.title : data.name) +". </h2><h4>("+(type == "movie" ? data.original_title : data.original_name)+")</h4></div></br>"+
+			"<div><h2> "+(type == "movie" ? data.title : data.name) +". </h2></div></br>"+
 			"<div><h3>Overview:</h3>"+data.overview+"</div></br>"+
 			"<div>Release date: "+(type == "movie" ? data.release_date : data.first_air_date)+"</div>"+
 		"</div>"+
-	  "</div>"
+	  "</div></div>"
 	);
 
 	window.scrollTo(0, 0);
@@ -161,6 +174,7 @@ function ShowMovieDetail(data, type, url) {
 	LoadingShowHide(false);
 }
 
+
 //parameters youtube
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
@@ -175,7 +189,7 @@ function ShowVideo(data, movieVideo){
 	var results = data["results"];
 		
 	results.forEach(function(result){
-		Nameplayer.innerHTML =`<h3 class="m-3">${result.name}</h3>`;
+		Nameplayer.innerHTML =`<h3 class="m-3 text-center">${result.name}</h3>`;
 
 		if(typeof(player) != "undefined") { 
 			player.loadVideoById({
@@ -212,13 +226,13 @@ function stopVideo() {
 }
 
 function ShowRecomendation(data, type, url) {
-	console.log(data);
+	//console.log(data);
 	url = url.replace("{sizeImage}", sizeImage);
 	var results = data["results"];
 	if(typeof(results) === "undefined")
 		movieRecomendations.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't recomendations: </h3></div>";
 	else {
-		movieRecomendations.innerHTML = "<div class='Title'><h2>Recomendations: </h2><div>";
+		movieRecomendations.innerHTML = "<div class='Title'><h1>Recomendations: </h1><div>";
 		results.forEach(function(result){
 			movieRecomendations.insertAdjacentHTML(
 				"beforeend",
@@ -237,17 +251,47 @@ function ShowRecomendation(data, type, url) {
 }
 
 function ShowTopMovies(data, type, url) {
-	console.log(data);
 	url = url.replace("{sizeImage}", sizeImage);
 	var results = data["results"];
 	if(typeof(results) === "undefined")
 		movieTop.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't top: </h3></div>";
 	else {
-		movieTop.innerHTML = "<div class='Title'><h2>Top Movie: </h2><div>";
+		movieTop.innerHTML = "<div class='Title m-3'><h1>Top Movie: </h1><div>";
 		results.forEach(function(result){
 			movieTop.insertAdjacentHTML(
 				"beforeend",
-				"<div class='top-movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
+				"<div class='movie col-md-2 col-ms-2 text-center' onclick='GetMovieDetail(" +
+				result.id + ', "' + type + '"' +
+				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
+				result.id +
+				"'> " +
+				(type == "movie" ? result.title : result.name) +
+				"</a> ( " +
+				(type == "movie" ? result.release_date : result.first_air_date) +
+				")</div> </div>"
+			);
+		});
+	}
+}
+
+
+
+
+
+//Popular Movie
+
+function ShowPopularMovies(data, type, url) {
+	//console.log(data);
+	url = url.replace("{sizeImage}", sizeImage);
+	var results = data["results"];
+	if(typeof(results) === "undefined")
+		moviePopular.innerHTML = "<div><h3>"+type == "movie" ? "Movie" : "Serial" +" havn't top: </h3></div>";
+	else {
+		moviePopular.innerHTML = "<div class='Title m-3'><h1>Popular Movie: </h1><div>";
+		results.forEach(function(result){
+			moviePopular.insertAdjacentHTML(
+				"beforeend",
+				"<div class='movie col-md-2 col-ms-2 text-center' onclick='GetMovieDetail(" +
 				result.id + ', "' + type + '"' +
 				");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 				result.id +
@@ -267,11 +311,11 @@ function ShowRes(data, url) {
 	var results = data["results"];
 	if(results) {
 		ClearDivData();
-		resultUL.innerHTML = "<div class='Title m-3'><h2>Trends: </h2><div>";
+		resultUL.innerHTML = "<div class='Title m-3'><h1>Trends: </h1><div>";
 	results.forEach(function(result) {
 		resultUL.insertAdjacentHTML(
 		"beforeend",
-		"<div class='movie col-md-3 col-ms-3 text-center' onclick='GetMovieDetail(" +
+		"<div class='movie col-md-2 col-ms-2 text-center' onclick='GetMovieDetail(" +
 		result.id + ', "' + result.media_type + '"' +
 		");'><img src='"+ url.replace("{imagePath}", result.poster_path) +"'></img><div class='card-body'><a class='movie-detail-link' id='" +
 		result.id +
@@ -301,7 +345,7 @@ function ShowRes(data, url) {
 		var poster = result.poster_path != null ? url.replace("{imagePath}", result.poster_path) : 'Default.png' ;
 		resultUL.insertAdjacentHTML(
 		"beforeend",
-		"<div class='movie' onclick='GetMovieDetail(" +
+		"<div class='movie col-md-2 col-ms-2 text-center ' onclick='GetMovieDetail(" +
 		result.id + ', "movie"' +
 		");'><div><img src='"+ poster +
 		"' alt='Not Found'></img></div><a class='movie-detail-link' id='" +

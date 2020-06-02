@@ -1,6 +1,12 @@
 body{
-    background-color: #eaeaea;
+    background-color: #131722;
     margin: auto;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1, h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
 }
 
 #content{
@@ -24,24 +30,27 @@ body{
 .Search{
     display:flex; 
     justify-content:center;
-    background-color: #424242;
+    background-color: #011b35;
     padding: 15px;
     align-items: center;
 }
 
-#resultUL, #movieRecomendations{
+#resultUL, #movieRecomendations, #moviePopular{
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     margin: 20px 0;
 }
-#resultUL div img , #movieRecomendations div img{
-    width: 200px;
+#resultUL div img , #movieRecomendations div img, #movieTop div img, #moviePopular div img{
+    width: 175px;
     margin: 10px 0;
     align-self:center;
 }
-#movieRecomendations div.Title, #resultUL div.Title{
+.Title{
     width: 100%;
+    text-align: center;
+    color: #9091a5;
+    background-color: #011b35;
+    padding: 20px;
 }
 /*.movie{
     display: flex;
@@ -61,17 +70,27 @@ body{
     display:flex;
 }*/
 
+.movie{
+    color: #9091a5;
+}
 .movie:hover{
     background-color: lightgrey;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     transition: 0.4s ease-out;
+    color: #131722;
+    border-radius: 10px;
     
 }
 
+#movieVideo{
+    margin-bottom: 50px;
+}
 .movieDetail{
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    background-image: linear-gradient(to right, rgb(19, 23, 34) 150px, rgba(73, 86, 109, 0.84) 100%);
+    color: #9091a5;
 }
 
 .movieDetail div img{
@@ -86,5 +105,3 @@ body{
 #backBtn img{
     margin-right: 5px;
 }
-
-
